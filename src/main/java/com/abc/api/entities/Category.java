@@ -17,29 +17,16 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "products")
-public class Product {
-
+@Table(name = "category")
+public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    private String title;
-
-    private String subtitle;
-
-    private BigDecimal price;
-
-    private String unit;
+    private String name;
 
     @Column(columnDefinition = "TEXT")
     private String description;
-
-    @Column(columnDefinition = "TEXT")
-    private String location;
-
-    @Column(columnDefinition = "TEXT")
-    private String notes;
 
     @Column(name = "created_at")
     @CreationTimestamp
@@ -49,16 +36,12 @@ public class Product {
     private Long createdBy;
 
     @Column(name = "updated_at")
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
 
     @Column(name = "updated_by")
-    @UpdateTimestamp
     private Long updatedBy;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "category_id")
-    private Category category;
-
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Image> images;
+    @OneToMany(mappedBy = "category")
+    private List<Product> products;
 }
