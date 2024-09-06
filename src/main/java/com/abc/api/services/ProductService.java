@@ -2,18 +2,27 @@ package com.abc.api.services;
 
 import com.abc.api.entities.Category;
 import com.abc.api.entities.Product;
-import com.abc.api.exceptions.ProductNotFoundException;
-import com.abc.api.payload.request.product.ProductCreateRequest;
-import com.abc.api.payload.request.product.ProductUpdateRequest;
-import com.abc.api.payload.response.product.ProductResponse;
+import com.abc.api.exceptions.ResourceNotFoundException;
+import com.abc.api.payload.request.products.ProductCreateRequest;
+import com.abc.api.payload.request.products.ProductSearchRequest;
+import com.abc.api.payload.request.products.ProductUpdateRequest;
+import com.abc.api.payload.response.categories.CategoryResponse;
+import com.abc.api.payload.response.products.ProductResponse;
 import com.abc.api.repositories.CategoryRepository;
 import com.abc.api.repositories.ProductRepository;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -22,24 +31,42 @@ public class ProductService {
 
     private final CategoryRepository categoryRepository;
 
-    public List<Product> getAll() {
-        return productRepository.findAll();
+    public Page<ProductResponse> getAll(ProductSearchRequest request) {
+        Specification<Product> specification = (root, query, builder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (Objects.nonNull(request.getTitle())) {
+                predicates.add(builder.or(
+                        builder.like(root.get("title"),"%" + request.getTitle() + "%"),
+                        builder.like(root.get("subtitle"),"%" + request.getSubtitle() + "%")
+                ));
+            }
+
+            return query.where(predicates.toArray(new Predicate[]{})).getRestriction();
+        };
+
+        Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
+        Page<Product> products = productRepository.findAll(specification, pageable);
+
+        List<ProductResponse> productResponses = products.getContent().stream()
+                .map(this::toProductResponse)
+                .toList();
+        return new PageImpl<>(productResponses, pageable, products.getTotalElements());
     }
 
-    public ResponseEntity<Product> getById(Long id) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException("Product not found"));
-        return ResponseEntity.ok(product);
+    public Product getById(Long id) {
+        return productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
     }
 
     public List<Product> getByCategory(String category) {
         return productRepository.findByCategoryName(category);
     }
 
-
-    public ProductResponse create(ProductCreateRequest request) {
-        Category category = Optional.ofNullable(categoryRepository.findByName(request.getCategory().getName()))
-                .orElseGet(()-> {
+    @Transactional
+    public Product create(ProductCreateRequest request) {
+        Category category = categoryRepository.findById(request.getCategory().getId())
+                .orElseGet(() -> {
                     Category newCategory = new Category();
                     newCategory.setName(request.getCategory().getName());
                     return categoryRepository.save(newCategory);
@@ -48,41 +75,42 @@ public class ProductService {
         Product product = new Product();
         product.setTitle(request.getTitle());
         product.setSubtitle(request.getSubtitle());
-        product.setPrice(request.getPrice());
+        product.setPriceMin(request.getPriceMin());
+        product.setPriceMax(request.getPriceMax());
         product.setUnit(request.getUnit());
         product.setDescription(request.getDescription());
-        product.setLocation(request.getDescription());
-        product.setNotes(request.getDescription());
+        product.setLocation(request.getLocation());
+        product.setNotes(request.getNotes());
         product.setCategory(category);
 
-        productRepository.save(product);
-
-        return toProductResponse(product);
+        return productRepository.save(product);
+//        return toProductResponse(products);
     }
 
-    public ProductResponse update(Long id, ProductUpdateRequest request) {
+    public Product update(Long id, ProductUpdateRequest request) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException("Product not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
 
         product.setTitle(request.getTitle());
         product.setSubtitle(request.getSubtitle());
-        product.setPrice(request.getPrice());
+        product.setPriceMin(request.getPriceMin());
+        product.setPriceMax(request.getPriceMax());
         product.setUnit(request.getUnit());
         product.setDescription(request.getDescription());
-        product.setLocation(request.getDescription());
-        product.setNotes(request.getDescription());
+        product.setLocation(request.getLocation());
+        product.setNotes(request.getNotes());
 
         Category category = categoryRepository.findByName(request.getCategory().getName());
         product.setCategory(category);
 
-        productRepository.save(product);
+        return productRepository.save(product);
 
-        return toProductResponse(product);
+//        return toProductResponse(products);
     }
 
     public void delete(Long id) {
         productRepository.findById(id).ifPresentOrElse(productRepository::delete, () -> {
-            throw new ProductNotFoundException("Product not found");
+            throw new ResourceNotFoundException("Product not found");
         });
     }
 
@@ -91,12 +119,17 @@ public class ProductService {
                 .id(product.getId())
                 .title(product.getTitle())
                 .subtitle(product.getSubtitle())
-                .price(product.getPrice())
+                .priceMin(product.getPriceMin())
+                .priceMax(product.getPriceMax())
                 .unit(product.getUnit())
                 .description(product.getDescription())
                 .location(product.getLocation())
                 .notes(product.getNotes())
-                .category(product.getCategory())
+                .category(CategoryResponse.builder()
+                        .id(product.getCategory().getId())
+                        .name(product.getCategory().getName())
+                        .description(product.getCategory().getDescription())
+                        .build())
                 .build();
     }
 }

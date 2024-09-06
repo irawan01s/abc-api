@@ -28,6 +28,8 @@ public class Image {
 
     private Integer sequence;
 
+    private String path;
+
     @Column(name = "created_at")
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -41,4 +43,8 @@ public class Image {
 
     @Column(name = "updated_by")
     private Long updatedBy;
+
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    private Product product;
 }

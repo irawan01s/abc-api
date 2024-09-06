@@ -1,4 +1,0 @@
-* Review Risiko
-User bisa hapus file evidence review risiko, 
-File hanya *pdf saja
-

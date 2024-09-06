@@ -9,12 +9,13 @@ import com.abc.api.payload.response.users.UserResponse;
 import com.abc.api.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("${api.prefix}/users")
 public class UserController {
 
     @Autowired

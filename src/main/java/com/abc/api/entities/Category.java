@@ -1,5 +1,6 @@
 package com.abc.api.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,7 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "category")
+@Table(name = "categories")
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -43,5 +44,6 @@ public class Category {
     private Long updatedBy;
 
     @OneToMany(mappedBy = "category")
+    @JsonIgnoreProperties("category")
     private List<Product> products;
 }

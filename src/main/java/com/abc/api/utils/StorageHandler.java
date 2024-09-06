@@ -1,51 +1,52 @@
-package com.abc.api.services;
+package com.abc.api.utils;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
-import org.springframework.stereotype.Service;
-import org.springframework.util.FileSystemUtils;
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.time.Year;
-import java.util.Objects;
-import java.util.stream.Stream;
 
-@Service
-public class StorageService {
+@Component
+public class StorageHandler {
 
     @Value("${storage.path}")
     private String STORAGE_PATH;
 
-    public void uploadFile(MultipartFile file,String filePath) {
+    public String uploadFile(MultipartFile file, String filePath) {
         Year year = Year.now();
         String directoryPath = STORAGE_PATH + "/" + year + "/" + filePath;
 
         try {
             Path uploadPath = Paths.get(directoryPath);
-            Files.copy(file.getInputStream(), uploadPath.resolve(filePath + File.separator + file.getOriginalFilename()));
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            String fileName = file.getOriginalFilename();
+            Path storagePath = uploadPath.resolve(fileName);
+            Files.copy(file.getInputStream(), storagePath, StandardCopyOption.REPLACE_EXISTING);
+
+            return storagePath.toString();
         } catch (IOException e) {
+            e.printStackTrace();
             if (e instanceof FileAlreadyExistsException) {
                 throw new RuntimeException("A file of that name already exists.");
             }
-            throw new RuntimeException(e.getMessage());
+            throw new RuntimeException("Failed to upload file: " + e.getMessage());
         }
     }
 
     public Resource downloadFile(String filePath) {
         try {
-            Path downloadPath = Paths.get(filePath).normalize();
-            System.out.println(downloadPath);
+            Path downloadPath = Paths.get(filePath);
+
             Resource resource = new UrlResource(downloadPath.toUri());
-            System.out.println(resource);
 
             if (resource.exists() || resource.isReadable()) {
                 return resource;
@@ -56,16 +57,4 @@ public class StorageService {
             throw new RuntimeException("Error: " + e.getMessage());
         }
     }
-
-//    public void deleteAll() {
-//        FileSystemUtils.deleteRecursively(root.toFile());
-//    }
-//
-//    public Stream<Path> loadAll() {
-//        try {
-//            return  Files.walk(this.root, 1).filter(path -> !path.equals(this.root)).map(this.root::relativize);
-//        } catch (IOException e) {
-//            throw new RuntimeException("Could not load the files!, " + e);
-//        }
-//    }
 }

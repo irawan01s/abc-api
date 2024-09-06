@@ -36,7 +36,7 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
-                    .requestMatchers("/api/auth/login", "/api/auth/signup", "/api/file/download2/**", "/api/file/download/**")
+                    .requestMatchers("/api/v1/auth/login", "/api/v1/auth/signup", "/api/v1/files/download/**")
                         .permitAll()
                         .anyRequest().authenticated() // Protect all other endpoints
                 )

@@ -1,5 +1,6 @@
 package com.abc.api.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,7 +29,11 @@ public class Product {
 
     private String subtitle;
 
-    private BigDecimal price;
+    @Column(name = "price_min")
+    private BigDecimal priceMin;
+
+    @Column(name = "price_max")
+    private BigDecimal priceMax;
 
     private String unit;
 
@@ -49,14 +54,15 @@ public class Product {
     private Long createdBy;
 
     @Column(name = "updated_at")
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
 
     @Column(name = "updated_by")
-    @UpdateTimestamp
     private Long updatedBy;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "category_id")
+    @JsonIgnoreProperties("products")
     private Category category;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)

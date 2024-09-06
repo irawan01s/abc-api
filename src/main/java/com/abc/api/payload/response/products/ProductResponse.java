@@ -1,6 +1,7 @@
-package com.abc.api.payload.response.product;
+package com.abc.api.payload.response.products;
 
 import com.abc.api.entities.Category;
+import com.abc.api.payload.response.categories.CategoryResponse;
 import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,7 +22,9 @@ public class ProductResponse {
 
     private String subtitle;
 
-    private BigDecimal price;
+    private BigDecimal priceMin;
+
+    private BigDecimal priceMax;
 
     private String unit;
 
@@ -35,5 +38,5 @@ public class ProductResponse {
 
     private LocalDateTime updatedAt;
 
-    private Category category;
+    private CategoryResponse category;
 }

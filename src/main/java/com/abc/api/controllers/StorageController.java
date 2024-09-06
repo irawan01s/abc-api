@@ -17,13 +17,14 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/file")
+@RequestMapping("${api.prefix}/files")
 @RequiredArgsConstructor
 public class StorageController {
 
@@ -31,13 +32,14 @@ public class StorageController {
     private StorageService storageService;
 
     @PostMapping("/upload")
-    public WebResponse<String> uploadFile(@RequestParam("file") MultipartFile[] files) {
+    public WebResponse<String> uploadFile(@RequestParam("files") MultipartFile[] files) {
         String message = "";
 
         try {
             List<String> fileNames = new ArrayList<>();
             Arrays.asList(files).stream().forEach(file -> {
-                String filePath = "/report" ;
+                Year currentYear = Year.now();
+                String filePath = "/report/" + currentYear ;
                 storageService.uploadFile(file, filePath);
                 fileNames.add(file.getOriginalFilename());
             });
@@ -55,13 +57,14 @@ public class StorageController {
         }
     };
 
-    @GetMapping("/download/{name}")
-    public ResponseEntity<?> downloadFile(@PathVariable(value = "name") String filename) {
+    @GetMapping("/download")
+    public ResponseEntity<?> downloadFile(@RequestParam(value = "filepath") String filePath) {
+        System.out.println(filePath);
         try {
-            var fileToDownload = storageService.downloadFile(filename);
-            System.out.println(fileToDownload);
+            var fileToDownload = storageService.downloadFile(filePath);
+
             return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filePath + "\"")
                     .contentType(MediaType.APPLICATION_OCTET_STREAM)
                     .body(fileToDownload);
         } catch (Exception e) {
@@ -69,18 +72,18 @@ public class StorageController {
         }
     }
 
-    @GetMapping("/files")
-    public WebResponse<List<Attachment>> getAll() {
-        List<Attachment> files = storageService.loadAll().map(path -> {
-            String filename = path.getFileName().toString();
-            String url = MvcUriComponentsBuilder.fromMethodName(StorageController.class,
-                    "getFile",
-                    path.getFileName().toString()).build().toString();
-            return new Attachment(filename, url);
-        }).collect(Collectors.toList());
-
-        return  WebResponse.<List<Attachment>>builder()
-                .data(files)
-                .build();
-    }
+//    @GetMapping("/files")
+//    public WebResponse<List<Attachment>> getAll() {
+//        List<Attachment> files = storageService.loadAll().map(path -> {
+//            String filename = path.getFileName().toString();
+//            String url = MvcUriComponentsBuilder.fromMethodName(StorageController.class,
+//                    "getFile",
+//                    path.getFileName().toString()).build().toString();
+//            return new Attachment(filename, url);
+//        }).collect(Collectors.toList());
+//
+//        return  WebResponse.<List<Attachment>>builder()
+//                .data(files)
+//                .build();
+//    }
 }

@@ -8,5 +8,5 @@ public class ImageDto {
 
     private String name;
 
-    private String url;
+    private String path;
 }
