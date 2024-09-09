@@ -7,15 +7,20 @@ import com.abc.api.payload.response.WebResponse;
 import com.abc.api.services.ImageService;
 import com.abc.api.services.StorageService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.ByteArrayResource;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @RestController
@@ -23,7 +28,11 @@ import java.util.List;
 @RequestMapping("${api.prefix}/images")
 public class ImageController {
     private final ImageService imageService;
+
     private final StorageService storageService;
+
+    @Value("${storage.path}")
+    private String STORAGE_PATH;
 
     @PostMapping("/upload")
     public ResponseEntity<WebResponse> createImage(@RequestParam List<MultipartFile> files, @RequestParam Long productId) {
@@ -49,6 +58,24 @@ public class ImageController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + image.getName() + "\"")
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(resource);
+    }
+
+    @GetMapping("/preview/{filepath}")
+    public ResponseEntity<Resource> previewImage(@PathVariable String filepath) {
+        try {
+            Path filePath = Paths.get(STORAGE_PATH + File.separator + filepath);
+            Resource resource = new UrlResource(filePath.toUri());
+
+            if (resource.exists() && resource.isReadable()) {
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                        .body(resource);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @PutMapping("/{id}")

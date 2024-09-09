@@ -8,12 +8,10 @@ import com.abc.api.repositories.ImageRepository;
 import com.abc.api.utils.StorageHandler;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.sql.SQLException;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +21,8 @@ public class ImageService {
     private final ImageRepository imageRepository;
 
     private final ProductService productService;
+
+    private final AuthService authService;
 
     private final StorageHandler storageHandler;
 
@@ -41,20 +41,25 @@ public class ImageService {
     public List<ImageDto> create(List<MultipartFile> files, Long productId) {
         Product product = productService.getById(productId);
         List<ImageDto> imageDtos = new ArrayList<>();
-
+        String userAuth = authService.getAuthenticatedUser();
+        System.out.println(userAuth);
+        int i = 1;
         for (MultipartFile file : files) {
             try {
                 Image image = new Image();
                 image.setName(file.getOriginalFilename());
-                image.setType(file.getContentType());
                 image.setSize(files.size());
+                image.setType(file.getContentType());
+                image.setSequence(i);
                 image.setProduct(product);
+                image.setCreatedBy(userAuth);
 
-                String tmpFilePath = "/products/" + productId;
-                String filePath = storageHandler.uploadFile(file, tmpFilePath);
+                String filePath = "products" +  File.separator + productId;
+                String filePathDb = storageHandler.uploadFile(file, filePath);
 
-                image.setPath(filePath);
+                image.setPath(filePathDb);
                 Image addedImage = imageRepository.save(image);
+
 
                 ImageDto imageDto = new ImageDto();
                 imageDto.setId(addedImage.getId());
@@ -62,6 +67,7 @@ public class ImageService {
                 imageDto.setPath(addedImage.getPath());
 
                 imageDtos.add(imageDto);
+                i++;
             } catch (Exception e) {
                 throw new RuntimeException(e.getMessage());
             }

@@ -25,13 +25,15 @@ public class StorageService {
     @Value("${storage.path}")
     private String STORAGE_PATH;
 
-    public void uploadFile(MultipartFile file,String filePath) {
+    public String uploadFile(MultipartFile file,String filePath) {
         Year year = Year.now();
-        String directoryPath = STORAGE_PATH + "/" + year + "/" + filePath;
+        String directoryPath = year + File.separator + filePath;
 
         try {
-            Path uploadPath = Paths.get(directoryPath);
+            Path uploadPath = Paths.get(STORAGE_PATH + File.separator + directoryPath);
             Files.copy(file.getInputStream(), uploadPath.resolve(filePath + File.separator + file.getOriginalFilename()));
+
+            return directoryPath;
         } catch (IOException e) {
             if (e instanceof FileAlreadyExistsException) {
                 throw new RuntimeException("A file of that name already exists.");
@@ -42,7 +44,7 @@ public class StorageService {
 
     public Resource downloadFile(String filePath) {
         try {
-            Path downloadPath = Paths.get(filePath).normalize();
+            Path downloadPath = Paths.get(STORAGE_PATH + File.separator + filePath).normalize();
             System.out.println(downloadPath);
             Resource resource = new UrlResource(downloadPath.toUri());
             System.out.println(resource);

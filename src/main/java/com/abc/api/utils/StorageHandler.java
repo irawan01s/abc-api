@@ -20,10 +20,10 @@ public class StorageHandler {
 
     public String uploadFile(MultipartFile file, String filePath) {
         Year year = Year.now();
-        String directoryPath = STORAGE_PATH + "/" + year + "/" + filePath;
+        String directoryPath = year + File.separator + filePath;
 
         try {
-            Path uploadPath = Paths.get(directoryPath);
+            Path uploadPath = Paths.get(STORAGE_PATH + File.separator + directoryPath);
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
             }
@@ -32,7 +32,7 @@ public class StorageHandler {
             Path storagePath = uploadPath.resolve(fileName);
             Files.copy(file.getInputStream(), storagePath, StandardCopyOption.REPLACE_EXISTING);
 
-            return storagePath.toString();
+            return directoryPath + fileName;
         } catch (IOException e) {
             e.printStackTrace();
             if (e instanceof FileAlreadyExistsException) {
