@@ -38,6 +38,8 @@ public class ProductController {
 
         Page<ProductResponse> productResponses = productService.getAll(request);
         return ResponseEntity.ok(WebResponse.<List<ProductResponse>>builder()
+                .status(true)
+                .message("Success")
                 .data(productResponses.getContent())
                 .paging(PagingResponse.builder()
                         .currentPage(productResponses.getNumber())
@@ -55,12 +57,15 @@ public class ProductController {
             System.out.println(product);
             System.out.println(productResponse);
             return ResponseEntity.ok(WebResponse.builder()
+                            .status(true)
+                            .message("Success")
                     .data(productResponse)
                     .build());
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(WebResponse.builder()
-                            .errors(e.getMessage())
+                            .status(false)
+                            .message(e.getMessage())
                             .build());
         }
     }
@@ -72,11 +77,14 @@ public class ProductController {
             ProductResponse productResponse = toProductResponse(product);
 
             return ResponseEntity.ok(WebResponse.builder()
+                    .status(true)
+                    .message("Success")
                     .data(productResponse).build());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(WebResponse.builder()
-                            .errors(e.getMessage())
+                            .status(false)
+                            .message(e.getMessage())
                             .build());
         }
     }
@@ -86,11 +94,14 @@ public class ProductController {
         try {
             Product product = productService.update(id, request);
             return ResponseEntity.ok(WebResponse.builder()
-                    .data("Success").build());
+                    .status(true)
+                    .message("Success")
+                    .build());
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(WebResponse.builder()
-                            .errors(e.getMessage())
+                            .status(false)
+                            .message(e.getMessage())
                             .build());
         }
     }
@@ -100,11 +111,13 @@ public class ProductController {
         try {
             productService.delete(id);
             return ResponseEntity.ok(WebResponse.builder()
-                    .data("Success").build());
+                    .status(true)
+                    .message("Success").build());
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(WebResponse.builder()
-                            .errors(e.getMessage())
+                            .status(false)
+                            .message(e.getMessage())
                             .build());
         }
     }

@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.*;
 import java.time.Year;
+import java.util.UUID;
 
 @Component
 public class StorageHandler {
@@ -18,7 +19,7 @@ public class StorageHandler {
     @Value("${storage.path}")
     private String STORAGE_PATH;
 
-    public String uploadFile(MultipartFile file, String filePath) {
+    public String uploadFile(MultipartFile file,String fileName, String filePath) {
         Year year = Year.now();
         String directoryPath = year + File.separator + filePath;
 
@@ -28,11 +29,12 @@ public class StorageHandler {
                 Files.createDirectories(uploadPath);
             }
 
-            String fileName = file.getOriginalFilename();
-            Path storagePath = uploadPath.resolve(fileName);
-            Files.copy(file.getInputStream(), storagePath, StandardCopyOption.REPLACE_EXISTING);
 
-            return directoryPath + fileName;
+            Path storagePath = uploadPath.resolve(fileName);
+            System.out.println("Masuk Update " + storagePath);
+            Files.copy(file.getInputStream(), storagePath, StandardCopyOption.REPLACE_EXISTING);
+            return directoryPath + File.separator + fileName;
+
         } catch (IOException e) {
             e.printStackTrace();
             if (e instanceof FileAlreadyExistsException) {
@@ -44,7 +46,7 @@ public class StorageHandler {
 
     public Resource downloadFile(String filePath) {
         try {
-            Path downloadPath = Paths.get(filePath);
+            Path downloadPath = Paths.get(STORAGE_PATH + File.separator + filePath);
 
             Resource resource = new UrlResource(downloadPath.toUri());
 
@@ -55,6 +57,23 @@ public class StorageHandler {
             }
         } catch (MalformedURLException e) {
             throw new RuntimeException("Error: " + e.getMessage());
+        }
+    }
+
+    public void deleteFile(String filePath) {
+        try {
+            Path path = Paths.get(STORAGE_PATH + File.separator + filePath);
+
+            if (Files.exists(path)) {
+                Files.delete(path);
+//                return true;
+            } else {
+                System.out.println("File does not exist: " + filePath);
+//                return false;
+            }
+        } catch (IOException e) {
+            System.out.println("Error deleting file: " + e.getMessage());
+//            return false;
         }
     }
 }

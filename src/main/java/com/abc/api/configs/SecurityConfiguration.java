@@ -2,6 +2,7 @@ package com.abc.api.configs;
 
 import com.abc.api.utils.CustomAuthenticationEntryPoint;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,22 +22,20 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class SecurityConfiguration {
 
-    @Autowired
-    private AuthenticationProvider authenticationProvider;
+    private final AuthenticationProvider authenticationProvider;
 
-    @Autowired
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
-                    .requestMatchers("/api/v1/auth/**", "/api/v1/images/preview/**", "/api/v1/files/download/**")
+                    .requestMatchers("/api/v1/auth/**", "/api/v1/images/preview/**", "/api/v1/images/download/**", "/api/v1/files/download/**")
                         .permitAll()
                         .anyRequest().authenticated() // Protect all other endpoints
                 )

@@ -1,12 +1,16 @@
 package com.abc.api.configs;
 
+import com.abc.api.payload.response.WebResponse;
 import com.abc.api.services.JwtService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -76,9 +80,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(request, response);
         } catch (JwtException | IllegalArgumentException exception) {
+            WebResponse<Object> webResponse = WebResponse.builder()
+                    .status(false)
+                    .errors("Invalid or expired token - " + exception.getMessage())
+                    .build();
+
             request.setAttribute("error_message", exception.getMessage());
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Invalid or expired token");
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            response.getWriter().write(new ObjectMapper().writeValueAsString(webResponse));
             response.getWriter().flush();
         } catch (Exception exception) {
             handlerExceptionResolver.resolveException(request, response, null, exception);

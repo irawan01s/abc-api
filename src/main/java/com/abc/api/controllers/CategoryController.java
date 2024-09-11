@@ -24,11 +24,14 @@ public class CategoryController {
         try {
             List<Category> categories = categoryService.getAll();
             return ResponseEntity.ok(WebResponse.builder()
+                            .status(true)
+                            .message("Success")
                     .data(categories).build());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(WebResponse.builder()
-                            .errors("Error " + e.getMessage())
+                            .status(false)
+                            .message(e.getMessage())
                             .build());
         }
     }
@@ -38,12 +41,15 @@ public class CategoryController {
         try {
             Category category = categoryService.getById(id);
             return ResponseEntity.ok(WebResponse.builder()
-                    .data(toCategoryResponse(category))
-                    .build());
+                            .status(true)
+                            .message("Success")
+                            .data(toCategoryResponse(category))
+                            .build());
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(WebResponse.builder()
-                            .errors(e.getMessage())
+                            .status(false)
+                            .message(e.getMessage())
                             .build());
         }
     }
@@ -53,12 +59,15 @@ public class CategoryController {
         try {
             Category category = categoryService.create(request);
             return ResponseEntity.ok(WebResponse.builder()
+                    .status(true)
+                    .message("Success")
                     .data(toCategoryResponse(category))
                     .build());
         } catch (AlreadyExistsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(WebResponse.builder()
-                            .errors(e.getMessage())
+                            .status(false)
+                            .message(e.getMessage())
                             .build());
         }
     }
@@ -68,12 +77,14 @@ public class CategoryController {
         try {
             categoryService.update(request, id);
             return ResponseEntity.ok(WebResponse.builder()
-                    .data("Success")
+                    .status(true)
+                    .message("Success")
                     .build());
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(WebResponse.builder()
-                            .errors(e.getMessage())
+                            .status(false)
+                            .message(e.getMessage())
                             .build());
         }
     }
@@ -83,12 +94,14 @@ public class CategoryController {
         try {
             categoryService.delete(id);
             return ResponseEntity.ok(WebResponse.builder()
-                    .data("Success")
+                    .status(true)
+                    .message("Success")
                     .build());
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(WebResponse.builder()
-                            .errors(e.getMessage())
+                            .status(false)
+                            .message(e.getMessage())
                             .build());
         }
     }

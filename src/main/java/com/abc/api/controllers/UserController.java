@@ -23,8 +23,14 @@ public class UserController {
 
     @PostMapping()
     public WebResponse<String> create(@RequestBody UserCreateRequest request) {
-        UserResponse userResponse = userService.create(request);
-        return WebResponse.<String>builder().data("OK").build();
+        try {
+            UserResponse userResponse = userService.create(request);
+            return WebResponse.<String>builder()
+                    .status(true).message("Success").build();
+        } catch (Exception e) {
+            return WebResponse.<String>builder()
+                    .status(false).message(e.getMessage()).build();
+        }
     }
 
     @GetMapping
@@ -32,23 +38,26 @@ public class UserController {
                                                     @RequestParam(value = "name", required = false) String name,
                                                     @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
                                                     @RequestParam(value = "size", required = false, defaultValue = "10") Integer size) {
-        SearchUserRequest request = SearchUserRequest.builder()
-                .page(page)
-                .size(size)
-                .nik(nik)
-                .name(name)
-                .build();
+            SearchUserRequest request = SearchUserRequest.builder()
+                    .page(page)
+                    .size(size)
+                    .nik(nik)
+                    .name(name)
+                    .build();
 
-        Page<UserResponse> userResponses = userService.getAll(request);
+            Page<UserResponse> userResponses = userService.getAll(request);
 
-        return WebResponse.<List<UserResponse>>builder()
-                .data(userResponses.getContent())
-                .paging(PagingResponse.builder()
-                        .currentPage(userResponses.getNumber())
-                        .totalPage(userResponses.getTotalPages())
-                        .size(userResponses.getSize())
-                        .build())
-                .build();
+            return WebResponse.<List<UserResponse>>builder()
+                    .status(true)
+                    .message("Success")
+                    .data(userResponses.getContent())
+                    .paging(PagingResponse.builder()
+                            .currentPage(userResponses.getNumber())
+                            .totalPage(userResponses.getTotalPages())
+                            .size(userResponses.getSize())
+                            .build())
+                    .build();
+
     }
 
     @PutMapping(path = "/{id}")

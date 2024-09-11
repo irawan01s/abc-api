@@ -6,28 +6,32 @@ import com.abc.api.entities.User;
 import com.abc.api.payload.response.users.UserResponse;
 import com.abc.api.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
 
+    @Transactional
     public UserResponse signup(UserCreateRequest request) {
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already registered");
+        }
+
         User user = new User();
         user.setUsername(request.getUsername());
         user.setNik(request.getNik());

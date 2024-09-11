@@ -57,14 +57,14 @@ public class StorageController {
         }
     };
 
-    @GetMapping("/download")
-    public ResponseEntity<?> downloadFile(@RequestParam(value = "filepath") String filePath) {
-        System.out.println(filePath);
+    @GetMapping("/download/{filename}")
+    public ResponseEntity<?> downloadFile(@RequestParam(value = "filename") String filename) {
+        System.out.println(filename);
         try {
-            var fileToDownload = storageService.downloadFile(filePath);
+            var fileToDownload = storageService.downloadFile(filename);
 
             return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filePath + "\"")
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
                     .contentType(MediaType.APPLICATION_OCTET_STREAM)
                     .body(fileToDownload);
         } catch (Exception e) {

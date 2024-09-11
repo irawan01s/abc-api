@@ -22,7 +22,7 @@ public class Image {
 
     private String name;
 
-    private Integer size;
+    private long size;
 
     private String type;
 
