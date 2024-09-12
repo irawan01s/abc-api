@@ -10,8 +10,10 @@ import com.abc.api.repositories.ImageRepository;
 import com.abc.api.utils.StorageHandler;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -112,7 +114,7 @@ public class ImageService {
         Image image = getById(id);
         storageHandler.deleteFile(image.getPath());
         imageRepository.findById(id).ifPresentOrElse(imageRepository::delete, () -> {
-            throw new ResourceNotFoundException("Image not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Image not found");
         });
     }
 }

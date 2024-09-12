@@ -5,6 +5,7 @@ import com.abc.api.exceptions.AlreadyExistsException;
 import com.abc.api.exceptions.ResourceNotFoundException;
 import com.abc.api.payload.response.WebResponse;
 import com.abc.api.payload.response.categories.CategoryResponse;
+import com.abc.api.services.AuthService;
 import com.abc.api.services.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,90 +21,47 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping
-    public ResponseEntity<WebResponse> getAll() {
-        try {
+    public ResponseEntity<WebResponse<Object>> getAll() {
+
             List<Category> categories = categoryService.getAll();
             return ResponseEntity.ok(WebResponse.builder()
-                            .status(true)
-                            .message("Success")
-                    .data(categories).build());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(WebResponse.builder()
-                            .status(false)
-                            .message(e.getMessage())
-                            .build());
-        }
+                    .status(true).data(categories).build());
+
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<WebResponse> getCategoryById(@PathVariable Long id) {
-        try {
+    public WebResponse<CategoryResponse> getCategoryById(@PathVariable Long id) {
             Category category = categoryService.getById(id);
-            return ResponseEntity.ok(WebResponse.builder()
+            return WebResponse.<CategoryResponse>builder()
                             .status(true)
-                            .message("Success")
                             .data(toCategoryResponse(category))
-                            .build());
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(WebResponse.builder()
-                            .status(false)
-                            .message(e.getMessage())
-                            .build());
-        }
+                            .build();
     }
 
     @PostMapping
-    public ResponseEntity<WebResponse> createCategory(@RequestBody Category request) {
-        try {
+    public WebResponse<CategoryResponse> createCategory(@RequestBody Category request) {
             Category category = categoryService.create(request);
-            return ResponseEntity.ok(WebResponse.builder()
+            return WebResponse.<CategoryResponse>builder()
                     .status(true)
-                    .message("Success")
                     .data(toCategoryResponse(category))
-                    .build());
-        } catch (AlreadyExistsException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(WebResponse.builder()
-                            .status(false)
-                            .message(e.getMessage())
-                            .build());
-        }
+                    .build();
+
     }
 
     @PutMapping(path = "/{id}")
-    public ResponseEntity<WebResponse> updateCategory(@PathVariable Long id, @RequestBody Category request) {
-        try {
+    public WebResponse<?> updateCategory(@PathVariable Long id, @RequestBody Category request) {
             categoryService.update(request, id);
-            return ResponseEntity.ok(WebResponse.builder()
+            return WebResponse.builder()
                     .status(true)
-                    .message("Success")
-                    .build());
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(WebResponse.builder()
-                            .status(false)
-                            .message(e.getMessage())
-                            .build());
-        }
+                    .build();
     }
 
     @DeleteMapping(path = "id")
-    public ResponseEntity<WebResponse> deleteCategory(@PathVariable Long id) {
-        try {
+    public WebResponse<?> deleteCategory(@PathVariable Long id) {
             categoryService.delete(id);
-            return ResponseEntity.ok(WebResponse.builder()
+            return WebResponse.builder()
                     .status(true)
-                    .message("Success")
-                    .build());
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(WebResponse.builder()
-                            .status(false)
-                            .message(e.getMessage())
-                            .build());
-        }
+                    .build();
     }
 
     private CategoryResponse toCategoryResponse(Category category) {
