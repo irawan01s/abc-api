@@ -31,7 +31,6 @@ public class StorageHandler {
 
 
             Path storagePath = uploadPath.resolve(fileName);
-            System.out.println("Masuk Update " + storagePath);
             Files.copy(file.getInputStream(), storagePath, StandardCopyOption.REPLACE_EXISTING);
             return directoryPath + File.separator + fileName;
 

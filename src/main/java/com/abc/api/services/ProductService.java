@@ -18,11 +18,14 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -54,9 +57,11 @@ public class ProductService {
         return new PageImpl<>(productResponses, pageable, products.getTotalElements());
     }
 
-    public Product getById(Long id) {
-        return productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+    public ProductResponse getById(Long id) {
+        Product product =  productRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
+
+        return toProductResponse(product);
     }
 
     public List<Product> getByCategory(String category) {
@@ -64,7 +69,9 @@ public class ProductService {
     }
 
     @Transactional
-    public Product create(ProductCreateRequest request) {
+    public ProductResponse create(ProductCreateRequest request) {
+        System.out.println("Buat Product");
+        System.out.println(request);
         Category category = categoryRepository.findById(request.getCategory().getId())
                 .orElseGet(() -> {
                     Category newCategory = new Category();
@@ -83,13 +90,18 @@ public class ProductService {
         product.setNotes(request.getNotes());
         product.setCategory(category);
 
-        return productRepository.save(product);
-//        return toProductResponse(products);
+        productRepository.save(product);
+
+        return toProductResponse(product);
     }
 
-    public Product update(Long id, ProductUpdateRequest request) {
+    @Transactional
+    public ProductResponse update(Long id, ProductUpdateRequest request) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
+
+        Category category = categoryRepository.findById(request.getCategory().getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
 
         product.setTitle(request.getTitle());
         product.setSubtitle(request.getSubtitle());
@@ -99,18 +111,15 @@ public class ProductService {
         product.setDescription(request.getDescription());
         product.setLocation(request.getLocation());
         product.setNotes(request.getNotes());
-
-        Category category = categoryRepository.findByName(request.getCategory().getName());
         product.setCategory(category);
+        productRepository.save(product);
 
-        return productRepository.save(product);
-
-//        return toProductResponse(products);
+        return toProductResponse(product);
     }
 
     public void delete(Long id) {
         productRepository.findById(id).ifPresentOrElse(productRepository::delete, () -> {
-            throw new ResourceNotFoundException("Product not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
         });
     }
 

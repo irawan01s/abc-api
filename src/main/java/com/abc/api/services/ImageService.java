@@ -6,7 +6,9 @@ import com.abc.api.entities.Product;
 import com.abc.api.entities.User;
 import com.abc.api.exceptions.ResourceNotFoundException;
 import com.abc.api.payload.response.images.ImageResponse;
+import com.abc.api.payload.response.products.ProductResponse;
 import com.abc.api.repositories.ImageRepository;
+import com.abc.api.repositories.ProductRepository;
 import com.abc.api.utils.StorageHandler;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +27,7 @@ import java.util.UUID;
 public class ImageService {
     private final ImageRepository imageRepository;
 
-    private final ProductService productService;
+    private final ProductRepository productRepository;
 
     private final StorageHandler storageHandler;
 
@@ -45,7 +47,8 @@ public class ImageService {
 
     @Transactional
     public List<ImageDto> create(User user, List<MultipartFile> files, Long productId) {
-        Product product = productService.getById(productId);
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Image not found"));
         Long userAuth = user.getId();
         List<ImageDto> imageDtos = new ArrayList<>();
 

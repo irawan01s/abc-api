@@ -22,15 +22,10 @@ public class UserController {
     private UserService userService;
 
     @PostMapping()
-    public WebResponse<String> create(@RequestBody UserCreateRequest request) {
-        try {
-            UserResponse userResponse = userService.create(request);
-            return WebResponse.<String>builder()
-                    .status(true).message("Success").build();
-        } catch (Exception e) {
-            return WebResponse.<String>builder()
-                    .status(false).message(e.getMessage()).build();
-        }
+    public WebResponse<UserResponse> create(@RequestBody UserCreateRequest request) {
+        UserResponse userResponse = userService.create(request);
+        return WebResponse.<UserResponse>builder()
+                .status(true).data(userResponse).build();
     }
 
     @GetMapping
@@ -49,7 +44,6 @@ public class UserController {
 
             return WebResponse.<List<UserResponse>>builder()
                     .status(true)
-                    .message("Success")
                     .data(userResponses.getContent())
                     .paging(PagingResponse.builder()
                             .currentPage(userResponses.getNumber())
