@@ -21,7 +21,7 @@ import java.util.List;
 public class ProductController {
     private final ProductService productService;
 
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<WebResponse<List<ProductResponse>>> getAll(@RequestParam(value = "title", required = false) String title,
                                                                      @RequestParam(value = "subtitle", required = false) String  subtitle,
                                                                      @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
@@ -55,14 +55,14 @@ public class ProductController {
                 .build());
     }
 
-    @GetMapping("/category/{category}")
-    public WebResponse<List<Product>> getByCategory(@PathVariable String category) {
-        List<Product> products = productService.getByCategory(category);
+    @GetMapping("/category/{categoryId}")
+    public WebResponse<List<Product>> getByCategory(@PathVariable Long categoryId) {
+        List<Product> products = productService.getByCategory(categoryId);
         return WebResponse.<List<Product>>builder()
                 .status(true).data(products).build();
     }
 
-    @PostMapping("/")
+    @PostMapping("")
     public ResponseEntity<WebResponse<ProductResponse>> createProduct(@RequestBody ProductCreateRequest request) {
         ProductResponse product = productService.create(request);
         System.out.println(product.getPriceMax());

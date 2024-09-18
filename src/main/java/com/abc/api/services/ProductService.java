@@ -64,8 +64,8 @@ public class ProductService {
         return toProductResponse(product);
     }
 
-    public List<Product> getByCategory(String category) {
-        return productRepository.findByCategoryName(category);
+    public List<Product> getByCategory(Long categoryId) {
+        return productRepository.findByCategoryId(categoryId);
     }
 
     @Transactional
