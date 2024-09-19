@@ -1,43 +1,36 @@
 package com.abc.api.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "attachments")
-public class Attachment {
+@Table(name = "locations")
+public class Location {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    private Long refId;
-
-    private String refTable;
-
-    private String category;
-
     private String name;
 
-    private String type;
+    @Column(columnDefinition = "TEXT")
+    private String link;
 
-    private Integer size;
-
-    private String path;
-
-    private Boolean approved;
-
-    private String notes;
+    @Column(columnDefinition = "TEXT")
+    private String address;
 
     @Column(name = "created_at")
     @CreationTimestamp
@@ -47,14 +40,13 @@ public class Attachment {
     private Long createdBy;
 
     @Column(name = "updated_at")
-    @CreationTimestamp
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
 
     @Column(name = "updated_by")
     private Long updatedBy;
 
-    public Attachment(String name, String url) {
-        this.name = name;
-        this.path  =url;
-    };
+    @OneToMany(mappedBy = "location")
+    @JsonIgnoreProperties("location")
+    private List<Product> products;
 }

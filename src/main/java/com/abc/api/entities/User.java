@@ -24,7 +24,8 @@ import java.util.List;
 public class User implements UserDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_seq")
+    @SequenceGenerator(name = "users_seq", sequenceName = "users_seq", allocationSize = 1)
     private Long id;
 
     private String username;
@@ -57,7 +58,7 @@ public class User implements UserDetails {
     private String token;
 
     @Column(name = "token_expired_at")
-    private Long tokenExpiredAt;
+    private LocalDateTime tokenExpiredAt;
 
     @Column(name = "created_at")
     @CreationTimestamp

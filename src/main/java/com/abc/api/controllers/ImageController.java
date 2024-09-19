@@ -1,6 +1,5 @@
 package com.abc.api.controllers;
 
-import com.abc.api.dto.ImageDto;
 import com.abc.api.entities.Image;
 import com.abc.api.entities.User;
 import com.abc.api.payload.response.WebResponse;
@@ -55,11 +54,11 @@ public class ImageController {
 
     @PostMapping("/upload")
     public ResponseEntity<WebResponse<?>> createImage(@AuthenticationPrincipal User user, @RequestParam List<MultipartFile> files, @RequestParam Long productId) {
-            List<ImageDto> imageDtos = imageService.create(user, files, productId);
+            List<ImageResponse> responses = imageService.create(user, files, productId);
 
             return ResponseEntity.ok(WebResponse.builder()
                     .status(true)
-                    .data("Images " + imageDtos)
+                    .data("Images " + responses)
                     .build());
     }
 

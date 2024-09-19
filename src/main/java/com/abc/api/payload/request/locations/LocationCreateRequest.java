@@ -1,5 +1,6 @@
-package com.abc.api.payload.response.images;
+package com.abc.api.payload.request.locations;
 
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,16 +10,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ImageResponse {
+public class LocationCreateRequest {
+
     private Long id;
 
     private String name;
 
-    private long size;
+    private String link;
 
-    private String type;
-
-    private Integer sequence;
-
-    private String path;
+    private String address;
 }

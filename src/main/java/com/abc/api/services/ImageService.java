@@ -1,12 +1,10 @@
 package com.abc.api.services;
 
-import com.abc.api.dto.ImageDto;
 import com.abc.api.entities.Image;
 import com.abc.api.entities.Product;
 import com.abc.api.entities.User;
 import com.abc.api.exceptions.ResourceNotFoundException;
 import com.abc.api.payload.response.images.ImageResponse;
-import com.abc.api.payload.response.products.ProductResponse;
 import com.abc.api.repositories.ImageRepository;
 import com.abc.api.repositories.ProductRepository;
 import com.abc.api.utils.StorageHandler;
@@ -25,6 +23,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class ImageService {
+
     private final ImageRepository imageRepository;
 
     private final ProductRepository productRepository;
@@ -46,11 +45,11 @@ public class ImageService {
     }
 
     @Transactional
-    public List<ImageDto> create(User user, List<MultipartFile> files, Long productId) {
+    public List<ImageResponse> create(User user, List<MultipartFile> files, Long productId) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Image not found"));
         Long userAuth = user.getId();
-        List<ImageDto> imageDtos = new ArrayList<>();
+        List<ImageResponse> imageResponses = new ArrayList<>();
 
         int i = 1;
         for (MultipartFile file : files) {
@@ -71,18 +70,18 @@ public class ImageService {
                 image.setPath(filePathDb);
                 Image addedImage = imageRepository.save(image);
 
-                ImageDto imageDto = new ImageDto();
-                imageDto.setId(addedImage.getId());
-                imageDto.setName(addedImage.getName());
-                imageDto.setPath(addedImage.getPath());
+                ImageResponse imageResponse = new ImageResponse();
+                imageResponse.setId(addedImage.getId());
+                imageResponse.setName(addedImage.getName());
+                imageResponse.setPath(addedImage.getPath());
 
-                imageDtos.add(imageDto);
+                imageResponses.add(imageResponse);
                 i++;
             } catch (Exception e) {
                 throw new RuntimeException(e.getMessage());
             }
         }
-        return imageDtos;
+        return imageResponses;
     }
 
     @Transactional

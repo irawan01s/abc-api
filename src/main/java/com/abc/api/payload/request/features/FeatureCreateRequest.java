@@ -1,4 +1,4 @@
-package com.abc.api.payload.response.images;
+package com.abc.api.payload.request.features;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,16 +9,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ImageResponse {
+public class FeatureCreateRequest {
+
     private Long id;
 
     private String name;
 
-    private long size;
+    private String description;
 
-    private String type;
-
-    private Integer sequence;
-
-    private String path;
+    private Long createdBy;
 }

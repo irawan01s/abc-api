@@ -1,4 +1,4 @@
-package com.abc.api.payload.response.images;
+package com.abc.api.payload.response.locations;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,16 +9,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ImageResponse {
+public class LocationResponse {
+
     private Long id;
 
     private String name;
 
-    private long size;
+    private String link;
 
-    private String type;
-
-    private Integer sequence;
-
-    private String path;
+    private String address;
 }

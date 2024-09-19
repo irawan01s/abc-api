@@ -23,6 +23,7 @@ public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name = "products_seq", allocationSize = 1)
     private Long id;
 
     private String title;
@@ -40,8 +41,8 @@ public class Product {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column(columnDefinition = "TEXT")
-    private String location;
+    @Column(name = "location_link", columnDefinition = "TEXT")
+    private String locationLink;
 
     @Column(columnDefinition = "TEXT")
     private String notes;
@@ -60,12 +61,22 @@ public class Product {
     @Column(name = "updated_by")
     private Long updatedBy;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
+    @JoinColumn(name = "feature_id")
+    @JsonIgnoreProperties("products")
+    private Feature feature;
+
+    @ManyToOne
     @JoinColumn(name = "category_id")
     @JsonIgnoreProperties("products")
     private Category category;
 
+    @ManyToOne
+    @JoinColumn(name = "location_id")
+    @JsonIgnoreProperties("products")
+    private Location location;
+
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties("product")
     private List<Image> images;
-}
+    }

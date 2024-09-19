@@ -1,6 +1,7 @@
 package com.abc.api.payload.response.products;
 
 import com.abc.api.entities.Category;
+import com.abc.api.entities.Feature;
 import com.abc.api.payload.response.categories.CategoryResponse;
 import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
@@ -30,13 +31,15 @@ public class ProductResponse {
 
     private String description;
 
-    private String location;
+    private String locationLink;
 
     private String notes;
 
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
+
+    private Feature feature;
 
     private CategoryResponse category;
 }

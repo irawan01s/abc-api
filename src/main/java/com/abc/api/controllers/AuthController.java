@@ -25,7 +25,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/signup")
-    public ResponseEntity<WebResponse<UserResponse>> signup(@RequestBody UserCreateRequest request) {
+    public ResponseEntity<WebResponse<UserResponse>> signup(@RequestBody UserCreateRequest request) throws InterruptedException {
         UserResponse user = authService.signup(request);
         return ResponseEntity.ok(WebResponse.<UserResponse>builder()
                         .status(true)

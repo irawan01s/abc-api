@@ -1,6 +1,7 @@
 package com.abc.api.services;
 
 import com.abc.api.entities.Category;
+import com.abc.api.entities.Location;
 import com.abc.api.entities.Product;
 import com.abc.api.exceptions.ResourceNotFoundException;
 import com.abc.api.payload.request.products.ProductCreateRequest;
@@ -9,6 +10,7 @@ import com.abc.api.payload.request.products.ProductUpdateRequest;
 import com.abc.api.payload.response.categories.CategoryResponse;
 import com.abc.api.payload.response.products.ProductResponse;
 import com.abc.api.repositories.CategoryRepository;
+import com.abc.api.repositories.LocationRepository;
 import com.abc.api.repositories.ProductRepository;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.transaction.Transactional;
@@ -33,6 +35,8 @@ public class ProductService {
     private final ProductRepository productRepository;
 
     private final CategoryRepository categoryRepository;
+
+    private final LocationRepository locationRepository;
 
     public Page<ProductResponse> getAll(ProductSearchRequest request) {
         Specification<Product> specification = (root, query, builder) -> {
@@ -70,14 +74,15 @@ public class ProductService {
 
     @Transactional
     public ProductResponse create(ProductCreateRequest request) {
-        System.out.println("Buat Product");
-        System.out.println(request);
         Category category = categoryRepository.findById(request.getCategory().getId())
                 .orElseGet(() -> {
                     Category newCategory = new Category();
                     newCategory.setName(request.getCategory().getName());
                     return categoryRepository.save(newCategory);
                 });
+
+        Location location = locationRepository.findById(request.getLocation().getId())
+                .orElseThrow(null);
 
         Product product = new Product();
         product.setTitle(request.getTitle());
@@ -86,7 +91,8 @@ public class ProductService {
         product.setPriceMax(request.getPriceMax());
         product.setUnit(request.getUnit());
         product.setDescription(request.getDescription());
-        product.setLocation(request.getLocation());
+        product.setLocation(location);
+        product.setLocationLink(request.getLocationLink());
         product.setNotes(request.getNotes());
         product.setCategory(category);
 
@@ -103,13 +109,17 @@ public class ProductService {
         Category category = categoryRepository.findById(request.getCategory().getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
 
+        Location location = locationRepository.findById(request.getLocation().getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Location not found"));
+
         product.setTitle(request.getTitle());
         product.setSubtitle(request.getSubtitle());
         product.setPriceMin(request.getPriceMin());
         product.setPriceMax(request.getPriceMax());
         product.setUnit(request.getUnit());
         product.setDescription(request.getDescription());
-        product.setLocation(request.getLocation());
+        product.setLocation(location);
+        product.setLocationLink(request.getLocationLink());
         product.setNotes(request.getNotes());
         product.setCategory(category);
         productRepository.save(product);
@@ -132,7 +142,7 @@ public class ProductService {
                 .priceMax(product.getPriceMax())
                 .unit(product.getUnit())
                 .description(product.getDescription())
-                .location(product.getLocation())
+                .locationLink(product.getLocationLink())
                 .notes(product.getNotes())
                 .category(CategoryResponse.builder()
                         .id(product.getCategory().getId())

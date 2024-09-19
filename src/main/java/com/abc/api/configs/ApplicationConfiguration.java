@@ -29,7 +29,7 @@ public class ApplicationConfiguration {
     }
 
     @Bean
-    public static PasswordEncoder passwordEncoder() {
+    public static BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder( 12);
     }
 

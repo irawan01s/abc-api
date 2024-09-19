@@ -62,10 +62,10 @@ public class ProductController {
                 .status(true).data(products).build();
     }
 
-    @PostMapping("")
+    @PostMapping
     public ResponseEntity<WebResponse<ProductResponse>> createProduct(@RequestBody ProductCreateRequest request) {
         ProductResponse product = productService.create(request);
-        System.out.println(product.getPriceMax());
+
         return ResponseEntity.ok().body(WebResponse.<ProductResponse>builder()
                 .status(true)
                 .data(product).build());

@@ -1,6 +1,8 @@
 package com.abc.api.payload.request.products;
 
 import com.abc.api.entities.Category;
+import com.abc.api.entities.Feature;
+import com.abc.api.entities.Location;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,9 +27,13 @@ public class ProductCreateRequest {
 
     private String description;
 
-    private String location;
+    private String locationLink;
 
     private String notes;
 
+    private Feature feature;
+
     private Category category;
+
+    private Location location;
 }
