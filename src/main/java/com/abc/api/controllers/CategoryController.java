@@ -1,15 +1,13 @@
 package com.abc.api.controllers;
 
 import com.abc.api.entities.Category;
-import com.abc.api.exceptions.AlreadyExistsException;
-import com.abc.api.exceptions.ResourceNotFoundException;
+import com.abc.api.entities.User;
 import com.abc.api.payload.response.WebResponse;
 import com.abc.api.payload.response.categories.CategoryResponse;
-import com.abc.api.services.AuthService;
 import com.abc.api.services.CategoryService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -39,8 +37,8 @@ public class CategoryController {
     }
 
     @PostMapping
-    public WebResponse<CategoryResponse> createCategory(@RequestBody Category request) {
-            Category category = categoryService.create(request);
+    public WebResponse<CategoryResponse> createCategory(@AuthenticationPrincipal User user, @RequestBody Category request) {
+            Category category = categoryService.create(user, request);
             return WebResponse.<CategoryResponse>builder()
                     .status(true)
                     .data(toCategoryResponse(category))
@@ -49,8 +47,8 @@ public class CategoryController {
     }
 
     @PutMapping(path = "/{id}")
-    public WebResponse<?> updateCategory(@PathVariable Long id, @RequestBody Category request) {
-            categoryService.update(request, id);
+    public WebResponse<?> updateCategory(@AuthenticationPrincipal User user, @PathVariable Long id, @RequestBody Category request) {
+            categoryService.update(user, id, request);
             return WebResponse.builder()
                     .status(true)
                     .build();

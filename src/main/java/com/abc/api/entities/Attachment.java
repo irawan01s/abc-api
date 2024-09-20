@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -21,17 +22,19 @@ public class Attachment {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
+    @Column(name = "ref_id")
     private Long refId;
 
+    @Column(name = "ref_table")
     private String refTable;
 
-    private String category;
+    private String document;
 
     private String name;
 
     private String type;
 
-    private Integer size;
+    private long size;
 
     private String path;
 
@@ -47,14 +50,9 @@ public class Attachment {
     private Long createdBy;
 
     @Column(name = "updated_at")
-    @CreationTimestamp
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
 
     @Column(name = "updated_by")
     private Long updatedBy;
-
-    public Attachment(String name, String url) {
-        this.name = name;
-        this.path  =url;
-    };
 }

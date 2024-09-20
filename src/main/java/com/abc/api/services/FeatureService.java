@@ -33,6 +33,7 @@ public class FeatureService {
         return featureRepository.save(feature);
     }
 
+    @Transactional
     public Feature update(User user, Long id, FeatureUpdateRequest request) {
         Feature feature = featureRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Feature not found"));

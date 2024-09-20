@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.*;
 import java.time.Year;
-import java.util.UUID;
 
 @Component
 public class StorageHandler {
@@ -28,7 +27,6 @@ public class StorageHandler {
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
             }
-
 
             Path storagePath = uploadPath.resolve(fileName);
             Files.copy(file.getInputStream(), storagePath, StandardCopyOption.REPLACE_EXISTING);

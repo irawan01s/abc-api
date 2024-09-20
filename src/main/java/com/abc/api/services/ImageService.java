@@ -58,7 +58,7 @@ public class ImageService {
 
                 Image image = new Image();
                 image.setName(fileName);
-                image.setSize(file.getSize()); // Size in sytes
+                image.setSize(file.getSize()); // Size in bytes
                 image.setType(file.getContentType());
                 image.setSequence(i);
                 image.setProduct(product);
@@ -89,7 +89,6 @@ public class ImageService {
         String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
 
         Image image = getById(id);
-
         image.setName(fileName);
         image.setSize(file.getSize()); //size in byte
         image.setType(file.getContentType());
