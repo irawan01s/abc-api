@@ -2,8 +2,6 @@ package com.abc.api.services;
 
 import com.abc.api.entities.Category;
 import com.abc.api.entities.User;
-import com.abc.api.exceptions.AlreadyExistsException;
-import com.abc.api.exceptions.ResourceNotFoundException;
 import com.abc.api.repositories.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -48,7 +46,7 @@ public class CategoryService {
 
     public void delete(Long id) {
         categoryRepository.findById(id).ifPresentOrElse(categoryRepository::delete, () -> {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found");
         });
     }
 }
