@@ -4,7 +4,6 @@ import com.abc.api.entities.Category;
 import com.abc.api.entities.Location;
 import com.abc.api.entities.Product;
 import com.abc.api.entities.User;
-import com.abc.api.exceptions.ResourceNotFoundException;
 import com.abc.api.payload.request.products.ProductCreateRequest;
 import com.abc.api.payload.request.products.ProductSearchRequest;
 import com.abc.api.payload.request.products.ProductUpdateRequest;
@@ -28,7 +27,6 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
