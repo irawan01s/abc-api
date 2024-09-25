@@ -1,28 +1,28 @@
 package com.abc.api.controllers;
 
-import com.abc.api.payload.request.users.SearchUserRequest;
-import com.abc.api.payload.request.users.UserCreateRequest;
-import com.abc.api.payload.request.users.UserUpdateRequest;
+import com.abc.api.entities.User;
+import com.abc.api.payload.request.users.*;
 import com.abc.api.payload.response.PagingResponse;
 import com.abc.api.payload.response.WebResponse;
 import com.abc.api.payload.response.users.UserResponse;
 import com.abc.api.services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.mail.MessagingException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("${api.prefix}/users")
+@RequiredArgsConstructor
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    @PostMapping()
-    public WebResponse<UserResponse> create(@RequestBody UserCreateRequest request) {
+    @PostMapping
+    public WebResponse<UserResponse> create(@AuthenticationPrincipal User user, @RequestBody UserCreateRequest request) {
         UserResponse userResponse = userService.create(request);
         return WebResponse.<UserResponse>builder()
                 .status(true).data(userResponse).build();
@@ -58,5 +58,21 @@ public class UserController {
     public WebResponse<UserResponse> update(@PathVariable("id") Long id, @RequestBody UserUpdateRequest request) {
         UserResponse userResponse = userService.update(id, request);
         return  WebResponse.<UserResponse>builder().data(userResponse).build();
+    }
+
+    @PostMapping(path = "/forgot-password")
+    public WebResponse<Object> forgotPassword(@RequestBody UserForgotPasswordRequest request) throws MessagingException {
+        userService.forgotPassword(request.getEmail());
+        return WebResponse.builder()
+                .status(true)
+                .build();
+    }
+
+    @PutMapping(path = "/reset-password")
+    public WebResponse<Object> resetPassword(@RequestBody UserResetPasswordRequest request) {
+        userService.resetPassword(request);
+        return WebResponse.builder()
+                .status(true)
+                .build();
     }
 }

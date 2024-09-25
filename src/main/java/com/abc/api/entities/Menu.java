@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -15,6 +17,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "menus")
 public class Menu {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
@@ -33,12 +36,14 @@ public class Menu {
     private Integer sequence;
 
     @Column(name = "created_at")
+    @CreationTimestamp
     private LocalDateTime createdAt;
 
     @Column(name = "created_by")
     private Long createdBy;
 
     @Column(name = "updated_at")
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
 
     @Column(name = "updated_by")

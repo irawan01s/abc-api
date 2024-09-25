@@ -36,4 +36,6 @@ public class ProductUpdateRequest {
     private Category category;
 
     private Location location;
+
+    private Long updatedBy;
 }

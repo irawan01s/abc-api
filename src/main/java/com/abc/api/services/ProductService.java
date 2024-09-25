@@ -3,6 +3,7 @@ package com.abc.api.services;
 import com.abc.api.entities.Category;
 import com.abc.api.entities.Location;
 import com.abc.api.entities.Product;
+import com.abc.api.entities.User;
 import com.abc.api.exceptions.ResourceNotFoundException;
 import com.abc.api.payload.request.products.ProductCreateRequest;
 import com.abc.api.payload.request.products.ProductSearchRequest;
@@ -73,7 +74,7 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductResponse create(ProductCreateRequest request) {
+    public ProductResponse create(User user, ProductCreateRequest request) {
         Category category = categoryRepository.findById(request.getCategory().getId())
                 .orElseGet(() -> {
                     Category newCategory = new Category();
@@ -89,6 +90,7 @@ public class ProductService {
         product.setSubtitle(request.getSubtitle());
         product.setPriceMin(request.getPriceMin());
         product.setPriceMax(request.getPriceMax());
+        product.setCreatedBy(user.getId());
         product.setUnit(request.getUnit());
         product.setDescription(request.getDescription());
         product.setLocation(location);
@@ -102,7 +104,7 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductResponse update(Long id, ProductUpdateRequest request) {
+    public ProductResponse update(User user, Long id, ProductUpdateRequest request) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
 
@@ -121,6 +123,7 @@ public class ProductService {
         product.setLocation(location);
         product.setLocationLink(request.getLocationLink());
         product.setNotes(request.getNotes());
+        product.setCreatedBy(user.getId());
         product.setCategory(category);
         productRepository.save(product);
 

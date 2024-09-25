@@ -1,6 +1,7 @@
 package com.abc.api.controllers;
 
 import com.abc.api.entities.Product;
+import com.abc.api.entities.User;
 import com.abc.api.payload.request.products.ProductCreateRequest;
 import com.abc.api.payload.request.products.ProductSearchRequest;
 import com.abc.api.payload.request.products.ProductUpdateRequest;
@@ -11,6 +12,7 @@ import com.abc.api.services.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -63,8 +65,8 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<WebResponse<ProductResponse>> createProduct(@RequestBody ProductCreateRequest request) {
-        ProductResponse product = productService.create(request);
+    public ResponseEntity<WebResponse<ProductResponse>> createProduct(@AuthenticationPrincipal User user, @RequestBody ProductCreateRequest request) {
+        ProductResponse product = productService.create(user, request);
 
         return ResponseEntity.ok().body(WebResponse.<ProductResponse>builder()
                 .status(true)
@@ -72,8 +74,8 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<WebResponse<ProductResponse>> updateProduct(@PathVariable Long id, @RequestBody ProductUpdateRequest request) {
-        ProductResponse response = productService.update(id, request);
+    public ResponseEntity<WebResponse<ProductResponse>> updateProduct(@AuthenticationPrincipal User user, @PathVariable Long id, @RequestBody ProductUpdateRequest request) {
+        ProductResponse response = productService.update(user, id, request);
         return ResponseEntity.ok().body(WebResponse.<ProductResponse>builder()
                 .status(true)
                 .data(response)

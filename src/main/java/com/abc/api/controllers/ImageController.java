@@ -25,6 +25,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("${api.prefix}/images")
 public class ImageController {
+
     private final ImageService imageService;
 
     @Value("${storage.path}")
@@ -64,7 +65,7 @@ public class ImageController {
 
     @PutMapping("/{id}")
     public WebResponse<ImageResponse> updateImage(@AuthenticationPrincipal User user, @PathVariable Long id, @RequestBody MultipartFile file) {
-            ImageResponse response = imageService.update(user, file, id);
+            ImageResponse response = imageService.update(user, id, file);
             return WebResponse.<ImageResponse>builder()
                     .status(true)
                     .data(response)

@@ -35,4 +35,6 @@ public class UserCreateRequest {
     private String position;
 
     private String division;
+
+    private String type;
 }

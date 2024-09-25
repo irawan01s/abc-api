@@ -1,19 +1,19 @@
-package com.abc.api.services;
+package com.abc.api.utils;
 
 import com.abc.api.payload.request.EmailRequest;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
-public class EmailService {
+@Component
+@RequiredArgsConstructor
+public class EmailHandler {
 
-    @Autowired
-    private JavaMailSender emailSender;
+    private final JavaMailSender emailSender;
 
     @Async
     public void sendEmail(String to, String subject, EmailRequest request) throws MessagingException {

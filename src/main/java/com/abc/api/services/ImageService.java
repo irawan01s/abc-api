@@ -85,7 +85,7 @@ public class ImageService {
     }
 
     @Transactional
-    public ImageResponse update(User user, MultipartFile file, Long id) {
+    public ImageResponse update(User user, Long id, MultipartFile file ) {
         String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
 
         Image image = getById(id);

@@ -6,8 +6,8 @@ import com.abc.api.payload.request.users.UserCreateRequest;
 import com.abc.api.entities.User;
 import com.abc.api.payload.request.users.UserVerificationRequest;
 import com.abc.api.payload.response.users.UserResponse;
-import com.abc.api.payload.response.users.UserVerificationResponse;
 import com.abc.api.repositories.UserRepository;
+import com.abc.api.utils.EmailHandler;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -34,7 +34,7 @@ public class AuthService {
 
     private final AuthenticationManager authenticationManager;
 
-    private final EmailService emailService;
+    private final EmailHandler emailHandler;
 
     @Transactional
     public UserResponse signup(UserCreateRequest request) {
@@ -42,7 +42,6 @@ public class AuthService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already registered");
         }
         LocalDateTime tokenExpired =LocalDateTime.now().plusMinutes(10);
-        System.out.println(tokenExpired);
 
         User user = new User();
         user.setUsername(request.getUsername());
@@ -135,7 +134,7 @@ public class AuthService {
                 + "<p style=\"font-size: 18px; font-weight: bold; color: #007bff;\">" + verificationCode + "</p>");
 
         try {
-            emailService.sendEmail(user.getEmail(), subject, message);
+            emailHandler.sendEmail(user.getEmail(), subject, message);
         } catch (MessagingException e) {
             // Handle email sending exception
             e.printStackTrace();

@@ -36,4 +36,6 @@ public class ProductCreateRequest {
     private Category category;
 
     private Location location;
+
+    private Long createdBy;
 }
