@@ -56,6 +56,9 @@ public class UserService {
         user.setPhone(request.getPhone());
         user.setPosition(request.getPosition());
         user.setDivision(request.getDivision());
+        user.setType(request.getType());
+        user.setStatus(request.getStatus());
+        user.setIsVerified(false);
         userRepository.save(user);
 
         return toUserResponse(user);
@@ -97,6 +100,9 @@ public class UserService {
                 .phone(user.getPhone())
                 .position(user.getPosition())
                 .division(user.getDivision())
+                .type(user.getType())
+                .status(user.getStatus())
+                .isVerified(user.getIsVerified())
                 .build();
     }
 
@@ -113,6 +119,9 @@ public class UserService {
             user.setPhone(request.getPhone());
             user.setPosition(request.getPosition());
             user.setDivision(request.getDivision());
+            user.setType(request.getType());
+            user.setStatus(request.getStatus());
+            user.setIsVerified(false);
         }
 
         userRepository.save(user);

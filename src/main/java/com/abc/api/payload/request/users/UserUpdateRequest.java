@@ -14,6 +14,8 @@ public class UserUpdateRequest {
 
     private String username;
 
+    private String email;
+
     private String password;
 
     private Integer nik;
@@ -22,11 +24,17 @@ public class UserUpdateRequest {
 
     private String address;
 
-    private String email;
-
     private String phone;
 
     private String position;
 
     private String division;
+
+    private String type;
+
+    private Integer status;
+
+    private Boolean isVerified;
+
+    private Long updatedBy;
 }

@@ -28,6 +28,13 @@ public class MenuService {
                 .toList();
     }
 
+    public MenuResponse getById(Long id) {
+        Menu menu =  menuRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Menu not found"));
+
+        return toMenuResponse(menu);
+    }
+
     @Transactional
     public MenuResponse create(User user, MenuCreateRequest request) {
         Menu menu = new Menu();

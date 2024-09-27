@@ -30,6 +30,10 @@ public class User implements UserDetails {
 
     private String username;
 
+    @Column(unique = true)
+    @Email
+    private String email;
+
     @Column(nullable = false)
     private String password;
 
@@ -41,10 +45,6 @@ public class User implements UserDetails {
     @Column(columnDefinition = "TEXT")
     private String address;
 
-    @Column(unique = true)
-    @Email
-    private String email;
-
     private String phone;
 
     private String position;
@@ -54,6 +54,12 @@ public class User implements UserDetails {
     private String type;
 
     private Integer status;
+
+    @Column(columnDefinition = "TEXT")
+    private String notes;
+
+    @Column(name = "isverified")
+    private Boolean isVerified;
 
     private String token;
 
@@ -73,6 +79,10 @@ public class User implements UserDetails {
 
     @Column(name = "updated_by")
     private Long updatedBy;
+
+    public boolean getIsVerified() {
+        return isVerified != null ? isVerified : false;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

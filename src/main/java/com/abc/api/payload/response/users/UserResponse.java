@@ -29,9 +29,17 @@ public class UserResponse {
 
     private String position;
 
+    private String type;
+
     private String division;
+
+    private Integer status;
+
+    private Boolean isVerified;
 
     private String token;
 
     private LocalDateTime tokenExpiredAt;
+
+    private Long createdBy;
 }

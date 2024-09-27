@@ -28,6 +28,15 @@ public class MenuController {
                 .build();
     }
 
+    @GetMapping("/{id}")
+    public WebResponse<MenuResponse> getById(@PathVariable Long id) {
+        MenuResponse menu = menuService.getById(id);
+        return WebResponse.<MenuResponse>builder()
+                .status(true)
+                .data(menu)
+                .build();
+    }
+
     @PostMapping
     public WebResponse<MenuResponse> createMenu(@AuthenticationPrincipal User user, @RequestBody MenuCreateRequest request) {
         MenuResponse menu = menuService.create(user, request);

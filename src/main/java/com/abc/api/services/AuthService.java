@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 
@@ -53,6 +54,9 @@ public class AuthService {
         user.setPhone(request.getPhone());
         user.setPosition(request.getPosition());
         user.setDivision(request.getDivision());
+        user.setType(request.getType());
+        user.setStatus(request.getStatus());
+        user.setIsVerified(false);
         user.setToken(generateVerificationCode());
         user.setTokenExpiredAt(tokenExpired);
         sendVerificationEmail(user);
@@ -67,6 +71,9 @@ public class AuthService {
                 .phone(user.getPhone())
                 .position(user.getPosition())
                 .division(user.getDivision())
+                .type(user.getType())
+                .status(user.getStatus())
+                .isVerified(user.getIsVerified())
                 .token(user.getToken())
                 .tokenExpiredAt(user.getTokenExpiredAt())
                 .build();
@@ -87,42 +94,40 @@ public class AuthService {
         return user;
     }
 
-    public void verifyUser(UserVerificationRequest request) {
-        Optional<User> optionalUser = userRepository.findByEmail(request.getEmail());
-        if(optionalUser.isPresent()) {
-            User user = optionalUser.get();
-            if (user.getTokenExpiredAt().isBefore(LocalDateTime.now())) {
-                throw new RuntimeException("Verification code has expired");
-            }
+    public void verifiedUser(UserVerificationRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
-            if (user.getToken().equals(request.getToken())) {
-                user.setStatus(1);
-                user.setToken(null);
-                user.setTokenExpiredAt(null);
-                userRepository.save(user);
-            } else {
-                throw new RuntimeException("Invalid verification code");
-            }
+        if (user.getTokenExpiredAt().isBefore(LocalDateTime.now())) {
+            System.out.println("Token Is Expired");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Verification code has expired");
+        }
+        System.out.println(user.getToken() + " Sama / Tidak" + request.getToken());
+        if (user.getToken().equals(request.getToken())) {
+            user.setStatus(1);
+            user.setIsVerified(true);
+            user.setToken(null);
+            user.setTokenExpiredAt(null);
+            userRepository.save(user);
         } else {
-            throw new RuntimeException("User not found");
+            System.out.println("Token Tidak Sama");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid verification code");
         }
     }
 
     public void resendVerificationCode(String email) {
-        Optional<User> optionalUser = userRepository.findByEmail(email);
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-            if (user.getStatus() == 1) {
-                throw new RuntimeException("Account is already verified");
-            }
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
-            user.setToken(generateVerificationCode());
-            user.setTokenExpiredAt(LocalDateTime.now().plusHours(1));
-            sendVerificationEmail(user);
-            userRepository.save(user);
-        } else {
-            throw new RuntimeException("User not found");
+        if (user.getIsVerified()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Account is already verified");
         }
+
+        user.setToken(generateVerificationCode());
+        user.setTokenExpiredAt(LocalDateTime.now().plusHours(1));
+        sendVerificationEmail(user);
+
+        userRepository.save(user);
     }
 
     public void sendVerificationEmail(User user) {

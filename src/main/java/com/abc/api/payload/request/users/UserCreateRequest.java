@@ -18,6 +18,9 @@ public class UserCreateRequest {
     private String username;
 
     @NotBlank
+    private String email;
+
+    @NotBlank
     private String password;
 
     private Integer nik;
@@ -27,9 +30,6 @@ public class UserCreateRequest {
 
     private String address;
 
-    @NotBlank
-    private String email;
-
     private String phone;
 
     private String position;
@@ -37,4 +37,10 @@ public class UserCreateRequest {
     private String division;
 
     private String type;
+
+    private Integer status;
+
+    private Boolean isVerified;
+
+    private Long createdBy;
 }

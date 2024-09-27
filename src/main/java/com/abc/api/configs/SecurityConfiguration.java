@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -37,6 +38,8 @@ public class SecurityConfiguration {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
                     .requestMatchers(
+
+                            "/auth",
                             "/api/v1/auth/**",
                             "/api/v1/images/preview/**",
                             "/api/v1/images/download/**",
@@ -45,7 +48,8 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, "/api/v1/products", "/api/v1/products/category/**")
                         .permitAll()
                         .anyRequest().authenticated() // Protect all other endpoints
-                )
+                ).
+                oauth2Login(oauth2 -> {})
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(exception ->  exception.authenticationEntryPoint(customAuthenticationEntryPoint))
@@ -64,7 +68,6 @@ public class SecurityConfiguration {
         configuration.setAllowedHeaders(List.of("Authorization","Content-Type"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-
         source.registerCorsConfiguration("/**",configuration);
 
         return source;

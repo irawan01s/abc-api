@@ -47,6 +47,8 @@ public class Product {
     @Column(columnDefinition = "TEXT")
     private String notes;
 
+    private Integer stock;
+
     @Column(name = "created_at")
     @CreationTimestamp
     private LocalDateTime createdAt;

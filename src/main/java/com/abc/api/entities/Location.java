@@ -27,10 +27,18 @@ public class Location {
     private String name;
 
     @Column(columnDefinition = "TEXT")
+    private String address;
+
+    @Column(columnDefinition = "TEXT")
     private String link;
 
     @Column(columnDefinition = "TEXT")
-    private String address;
+    private String longitude;
+
+    @Column(columnDefinition = "TEXT")
+    private String latitude;
+
+    private Integer distance;
 
     @Column(name = "created_at")
     @CreationTimestamp
